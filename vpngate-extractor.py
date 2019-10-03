@@ -88,6 +88,9 @@ for proxy in proxy_list:
             # Process the hosts table
             for table_row in table_rows:
                 table_cells = table_row.find_all('td')
+                # Skip rows with the country title
+                if table_cells[TABLE_COLUMN_COUNTRY].get_text() == TABLE_COLUMN_COUNTRY_TITLE:
+                    continue
                 # Find any host with the requested country
                 if table_cells[TABLE_COLUMN_COUNTRY].get_text() == REQUESTED_COUNTRY:
                     print('  > Saved host to download',
