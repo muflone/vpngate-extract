@@ -106,7 +106,7 @@ for proxy in proxy_list:
     # Cycle each configuration_url
     for (url_index, url) in enumerate(configuration_urls):
         print('  > Downloading configuration index')
-        page_content = proxy_request.open(url=url)
+        page_content = proxy_request.open(url=url, retries=3)
         if proxy_request.exception:
             print('  > Unable to download configuration index:',
                   proxy_request.exception)
@@ -130,7 +130,7 @@ for proxy in proxy_list:
                     NUMBER=profile_number,
                     URL=full_url
                 ))
-                page_content = proxy_request.open(url=full_url)
+                page_content = proxy_request.open(url=full_url, retries=10)
                 if not proxy_request.exception:
                     # Save configuration file
                     with open(destination_path, 'wb') as destination_file:

@@ -51,17 +51,21 @@ class ProxyRequest(object):
         else:
             raise AssertionError('Invalid value for timeout')
 
-    def open(self, *, url: str) -> bytes:
+    def open(self, *, url: str, retries : int = 1) -> bytes:
         """
         Open the requested url.
 
         :param url: the resource to download
+        :param retries: the number of retries to attempt to download the url
         :return: the downloaded content
         """
-        self.exception = None
-        result = None
-        try:
-            result = self.urllib_opener.open(url, timeout=self.__timeout).read()
-        except (urllib.request.URLError, socket.timeout) as error:
-            self.exception = error
+        for attempt in range(retries):
+            self.exception = None
+            result = None
+            try:
+                result = self.urllib_opener.open(url,
+                                                 timeout=self.__timeout).read()
+                break
+            except (urllib.request.URLError, socket.timeout) as error:
+                self.exception = error
         return result
