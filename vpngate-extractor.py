@@ -35,6 +35,8 @@ TABLE_COLUMN_COUNTRY = 0
 TABLE_COLUMN_COUNTRY_TITLE = 'Country(Physical location)'
 # Requested country to filter hosts
 REQUESTED_COUNTRY = 'Italy'
+# Column index with server hostname
+TABLE_COLUMN_HOSTNAME = 1
 # Column index where lookup the hyperlink configuration
 TABLE_COLUMN_CONFIG = 6
 # Table hosts ID
@@ -60,11 +62,13 @@ for proxy in proxy_list:
     # Download index page using proxy
     time.sleep(DELAY_FOR_EACH_PROXY)
     try:
-        print("Connecting using proxy {PROXY}".format(PROXY=proxy))
+        print('Connecting using proxy {PROXY}'.format(PROXY=proxy))
         page_content = urllib_opener.open(PAGE_URL,
                                           timeout=CONNECTION_TIMEOUT).read().decode('utf-8')
-    except urllib.request.URLError:
+    except urllib.request.URLError as error:
+        print('  > Unable to connect:', error)
         continue
+    print('  > Connection established, downloading index')
     # Apply page fixes for broken tables
     page_content = page_content.replace(
         "<td class='vg_table_header'><b>Score</b><BR>(Quality)</td>\r\n</td>",
@@ -85,14 +89,20 @@ for proxy in proxy_list:
                 table_cells = table_row.find_all('td')
                 # Find any host with the requested country
                 if table_cells[TABLE_COLUMN_COUNTRY].get_text() == REQUESTED_COUNTRY:
+                    print('  > Saved host to download',
+                          table_cells[TABLE_COLUMN_HOSTNAME].get_text())
                     # Save data
                     config_links = table_cells[TABLE_COLUMN_CONFIG].find_all('a')
                     for link in config_links:
                         configuration_urls.append(
                             urllib.parse.urljoin(PAGE_URL, link.get('href')))
+                else:
+                    print('  > Skipping invalid country',
+                          table_cells[TABLE_COLUMN_COUNTRY].get_text())
 
     # Cycle each configuration_url
     for (url_index, url) in enumerate(configuration_urls):
+        print('  > Downloading configuration index')
         page_content = urllib_opener.open(url,
                                           timeout=CONNECTION_TIMEOUT).read()
         # Parse each configuration page
@@ -110,7 +120,7 @@ for proxy in proxy_list:
                     # Download data
                     profile_number += 1
                     full_url = urllib.parse.urljoin(PAGE_URL, link.get('href'))
-                    print('Downloading {INDEX}/{TOTAL} [{NUMBER}]: {URL}'.format(
+                    print('  > Downloading {INDEX}/{TOTAL} [{NUMBER}]: {URL}'.format(
                         INDEX=url_index + 1,
                         TOTAL=len(configuration_urls),
                         NUMBER=profile_number,
