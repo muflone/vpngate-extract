@@ -117,8 +117,6 @@ for proxy in proxy_list:
         profile_number = 0
         for link in bsoup.find_all('a'):
             if link.get('href').endswith('.ovpn'):
-                destination_path = os.path.join(DESTINATION_OVPN_PROFILES_FOLDER,
-                                                link.get('href').split('/')[-1])
                 # Delay before download
                 time.sleep(DELAY_FOR_EACH_DOWNLOAD)
                 # Download data
@@ -133,6 +131,9 @@ for proxy in proxy_list:
                 page_content = proxy_request.open(url=full_url, retries=10)
                 if not proxy_request.exception:
                     # Save configuration file
+                    destination_path = os.path.join(
+                        DESTINATION_OVPN_PROFILES_FOLDER,
+                        link.get('href').split('/')[-1])
                     with open(destination_path, 'wb') as destination_file:
                         destination_file.write(page_content)
                 else:
