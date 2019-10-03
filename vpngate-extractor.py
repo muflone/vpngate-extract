@@ -19,12 +19,12 @@
 ##
 
 import os.path
-import socket
 import time
 import urllib.parse
-import urllib.request
 
 from bs4 import BeautifulSoup
+
+from proxy_request import ProxyRequest
 
 # Proxy list file
 PROXY_LIST_FILENAME = 'proxy_list.csv'
@@ -57,18 +57,17 @@ with open(PROXY_LIST_FILENAME, 'r') as proxy_file:
 
 for proxy in proxy_list:
     configuration_urls = []
-    urllib_opener = urllib.request.build_opener(
-        urllib.request.ProxyHandler({'http': proxy,
-                                     'https': proxy}))
+    proxy_request = ProxyRequest(proxy=proxy)
+    proxy_request.timeout = CONNECTION_TIMEOUT
     # Download index page using proxy
     time.sleep(DELAY_FOR_EACH_PROXY)
-    try:
-        print('Connecting using proxy {PROXY}'.format(PROXY=proxy))
-        page_content = urllib_opener.open(PAGE_URL,
-                                          timeout=CONNECTION_TIMEOUT).read().decode('utf-8')
-    except (urllib.request.URLError, socket.timeout) as error:
-        print('  > Unable to connect:', error)
+    print('Connecting using proxy {PROXY}'.format(PROXY=proxy))
+    page_content = proxy_request.open(url=PAGE_URL)
+    if proxy_request.exception:
+        print('  > Unable to connect:', proxy_request.exception)
         continue
+    else:
+        page_content = page_content.decode('utf-8')
     print('  > Connection established, downloading index')
     # Apply page fixes for broken tables
     page_content = page_content.replace(
@@ -107,29 +106,36 @@ for proxy in proxy_list:
     # Cycle each configuration_url
     for (url_index, url) in enumerate(configuration_urls):
         print('  > Downloading configuration index')
-        page_content = urllib_opener.open(url,
-                                          timeout=CONNECTION_TIMEOUT).read()
+        page_content = proxy_request.open(url=url)
+        if proxy_request.exception:
+            print('  > Unable to download configuration index:',
+                  proxy_request.exception)
+            continue
         # Parse each configuration page
         bsoup = BeautifulSoup(page_content, 'html.parser')
         # Cycle over each link, ending with '.ovpn'
         profile_number = 0
         for link in bsoup.find_all('a'):
             if link.get('href').endswith('.ovpn'):
-                # Save configuration file
                 destination_path = os.path.join(DESTINATION_OVPN_PROFILES_FOLDER,
                                                 link.get('href').split('/')[-1])
-                with open(destination_path, 'wb') as destination_file:
-                    # Delay before download
-                    time.sleep(DELAY_FOR_EACH_DOWNLOAD)
-                    # Download data
-                    profile_number += 1
-                    full_url = urllib.parse.urljoin(PAGE_URL, link.get('href'))
-                    print('  > Downloading {INDEX}/{TOTAL} [{NUMBER}]: {URL}'.format(
-                        INDEX=url_index + 1,
-                        TOTAL=len(configuration_urls),
-                        NUMBER=profile_number,
-                        URL=full_url
-                    ))
-                    page_content = urllib_opener.open(full_url,
-                                                      timeout=CONNECTION_TIMEOUT)
-                    destination_file.write(page_content.read())
+                # Delay before download
+                time.sleep(DELAY_FOR_EACH_DOWNLOAD)
+                # Download data
+                profile_number += 1
+                full_url = urllib.parse.urljoin(PAGE_URL, link.get('href'))
+                print('  > Downloading {INDEX}/{TOTAL} [{NUMBER}]: {URL}'.format(
+                    INDEX=url_index + 1,
+                    TOTAL=len(configuration_urls),
+                    NUMBER=profile_number,
+                    URL=full_url
+                ))
+                page_content = proxy_request.open(url=full_url)
+                if not proxy_request.exception:
+                    # Save configuration file
+                    with open(destination_path, 'wb') as destination_file:
+                        destination_file.write(page_content)
+                else:
+                    # Error during configuration download
+                    print('  > Unable to download the configuration:',
+                          proxy_request.exception)
