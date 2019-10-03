@@ -47,7 +47,7 @@ DESTINATION_OVPN_PROFILES_FOLDER = 'ovpn_profiles'
 DELAY_FOR_EACH_PROXY = 0
 DELAY_FOR_EACH_DOWNLOAD = 1
 # Connection timeout
-CONNECTION_TIMEOUT = 10
+CONNECTION_TIMEOUT = 30
 
 with open(PROXY_LIST_FILENAME, 'r') as proxy_file:
     proxy_list = ['{HOST}'.format(HOST=proxy.strip())
