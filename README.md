@@ -17,4 +17,4 @@ Extract OpenVPN hosts from vpngate.com
 # System Requirements
 
 * Python 3.x
-* BeautifulSoup4 (<https://pypi.org/project/beautifulsoup4//>)
+* BeautifulSoup4 (<https://pypi.org/project/beautifulsoup4/>)
