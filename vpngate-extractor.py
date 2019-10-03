@@ -19,6 +19,7 @@
 ##
 
 import os.path
+import socket
 import time
 import urllib.parse
 import urllib.request
@@ -65,7 +66,7 @@ for proxy in proxy_list:
         print('Connecting using proxy {PROXY}'.format(PROXY=proxy))
         page_content = urllib_opener.open(PAGE_URL,
                                           timeout=CONNECTION_TIMEOUT).read().decode('utf-8')
-    except urllib.request.URLError as error:
+    except (urllib.request.URLError, socket.timeout) as error:
         print('  > Unable to connect:', error)
         continue
     print('  > Connection established, downloading index')
