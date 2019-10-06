@@ -49,6 +49,8 @@ DELAY_FOR_EACH_PROXY = 0
 DELAY_FOR_EACH_DOWNLOAD = 1
 # Connection timeout
 CONNECTION_TIMEOUT = 30
+# Download profiles
+DOWNLOAD_PROFILES = True
 
 with open(PROXY_LIST_FILENAME, 'r') as proxy_file:
     proxy_list = ['{HOST}'.format(HOST=proxy.strip())
@@ -105,42 +107,43 @@ for proxy in proxy_list:
 
     # Cycle each configuration_url
     for (url_index, url) in enumerate(configuration_urls):
-        print('  > Downloading configuration {INDEX} for {TOTALS} hosts'.format(
-            INDEX=url_index + 1,
-            TOTALS=len(configuration_urls)
-        ))
-        page_content = proxy_request.open(url=url, retries=3)
-        if proxy_request.exception:
-            print('  > Unable to download configuration index:',
-                  proxy_request.exception)
-            continue
-        # Parse each configuration page
-        bsoup = BeautifulSoup(page_content, 'html.parser')
-        # Cycle over each link, ending with '.ovpn'
-        profile_number = 0
-        profiles_list = [link
-                         for link in bsoup.find_all('a')
-                         if link.get('href').endswith('.ovpn')]
-        for link in profiles_list:
-            # Delay before download
-            time.sleep(DELAY_FOR_EACH_DOWNLOAD)
-            # Download data
-            profile_number += 1
-            full_url = urllib.parse.urljoin(PAGE_URL, link.get('href'))
-            print('  > Downloading profile {INDEX} of {TOTALS}: {URL}'.format(
-                INDEX=profile_number,
-                TOTALS=len(profiles_list),
-                URL=full_url
+        if DOWNLOAD_PROFILES:
+            print('  > Downloading configuration {INDEX} for {TOTALS} hosts'.format(
+                INDEX=url_index + 1,
+                TOTALS=len(configuration_urls)
             ))
-            page_content = proxy_request.open(url=full_url, retries=10)
-            if not proxy_request.exception:
-                # Save configuration file
-                destination_path = os.path.join(
-                    DESTINATION_OVPN_PROFILES_FOLDER,
-                    link.get('href').split('/')[-1])
-                with open(destination_path, 'wb') as destination_file:
-                    destination_file.write(page_content)
-            else:
-                # Error during configuration download
-                print('  > Unable to download the configuration:',
+            page_content = proxy_request.open(url=url, retries=3)
+            if proxy_request.exception:
+                print('  > Unable to download configuration index:',
                       proxy_request.exception)
+                continue
+            # Parse each configuration page
+            bsoup = BeautifulSoup(page_content, 'html.parser')
+            # Cycle over each link, ending with '.ovpn'
+            profile_number = 0
+            profiles_list = [link
+                             for link in bsoup.find_all('a')
+                             if link.get('href').endswith('.ovpn')]
+            for link in profiles_list:
+                # Delay before download
+                time.sleep(DELAY_FOR_EACH_DOWNLOAD)
+                # Download data
+                profile_number += 1
+                full_url = urllib.parse.urljoin(PAGE_URL, link.get('href'))
+                print('  > Downloading profile {INDEX} of {TOTALS}: {URL}'.format(
+                    INDEX=profile_number,
+                    TOTALS=len(profiles_list),
+                    URL=full_url
+                ))
+                page_content = proxy_request.open(url=full_url, retries=10)
+                if not proxy_request.exception:
+                    # Save configuration file
+                    destination_path = os.path.join(
+                        DESTINATION_OVPN_PROFILES_FOLDER,
+                        link.get('href').split('/')[-1])
+                    with open(destination_path, 'wb') as destination_file:
+                        destination_file.write(page_content)
+                else:
+                    # Error during configuration download
+                    print('  > Unable to download the configuration:',
+                          proxy_request.exception)
