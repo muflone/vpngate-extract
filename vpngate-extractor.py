@@ -24,6 +24,7 @@ import urllib.parse
 
 from bs4 import BeautifulSoup
 
+from openvpn_profile import OpenVPNProfile
 from proxy_request import ProxyRequest
 
 # Proxy list file
@@ -51,11 +52,15 @@ DELAY_FOR_EACH_DOWNLOAD = 1
 CONNECTION_TIMEOUT = 30
 # Download profiles
 DOWNLOAD_PROFILES = True
+# Generate profiles
+AUTOGENERATE_PROFILES = True
 
 with open(PROXY_LIST_FILENAME, 'r') as proxy_file:
     proxy_list = ['{HOST}'.format(HOST=proxy.strip())
                   for proxy in proxy_file.readlines()
                   if not proxy.startswith('#')]
+
+openvpn_profile = OpenVPNProfile('ovpn_template.txt')
 
 for proxy in proxy_list:
     configuration_urls = []
@@ -147,3 +152,23 @@ for proxy in proxy_list:
                     # Error during configuration download
                     print('  > Unable to download the configuration:',
                           proxy_request.exception)
+        if AUTOGENERATE_PROFILES:
+            # Generate OpenVPN profiles
+            parts_url = urllib.parse.urlsplit(url)
+            arguments_dict = {key: value[0]
+                              for (key, value)
+                              in urllib.parse.parse_qs(parts_url.query).items()}
+            for destination_host_type in ('fqdn', 'ip'):
+                for port_type in ('tcp', 'udp'):
+                    if arguments_dict[port_type] != '0':
+                        destination_path = os.path.join(
+                            DESTINATION_OVPN_PROFILES_FOLDER,
+                            'vpngate_{HOST}_{PROTOCOL}_{PORT}.ovpn'.format(
+                                HOST=arguments_dict[destination_host_type],
+                                PROTOCOL=port_type,
+                                PORT=arguments_dict[port_type]
+                            ))
+                        openvpn_profile.create(filepath=destination_path,
+                                               protocol=port_type,
+                                               host=arguments_dict[destination_host_type],
+                                               port=arguments_dict[port_type])
