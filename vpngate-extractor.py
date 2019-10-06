@@ -24,8 +24,9 @@ import urllib.parse
 
 from bs4 import BeautifulSoup
 
-from openvpn_profile import OpenVPNProfile
-from proxy_request import ProxyRequest
+from vpngate_extractor.openvpn_profile import OpenVPNProfile
+from vpngate_extractor.proxy_request import ProxyRequest
+
 
 # Proxy list file
 PROXY_LIST_FILENAME = 'proxy_list.csv'
