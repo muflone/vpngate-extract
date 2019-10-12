@@ -18,14 +18,12 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ##
 
-import socket
-import urllib.request
+import httpx
 
 class ProxyRequest(object):
     def __init__(self, *, proxy: dict) -> None:
-        self.urllib_opener = urllib.request.build_opener(
-            urllib.request.ProxyHandler({'http': proxy,
-                                         'https': proxy}))
+        self.proxy = {'all': proxy}
+        self.__proxy = proxy
         self.__timeout = 10
         self.exception = None
 
@@ -51,7 +49,7 @@ class ProxyRequest(object):
         else:
             raise AssertionError('Invalid value for timeout')
 
-    def open(self, *, url: str, retries : int = 1) -> bytes:
+    async def open(self, *, url: str, retries : int = 1) -> bytes:
         """
         Open the requested url.
 
@@ -63,9 +61,13 @@ class ProxyRequest(object):
             self.exception = None
             result = None
             try:
-                result = self.urllib_opener.open(url,
-                                                 timeout=self.__timeout).read()
+                async with httpx.AsyncClient(proxies=self.proxy,
+                                             timeout=self.__timeout) as client:
+                    request = await client.get(url)
+                    result = request.text
                 break
-            except (urllib.request.URLError, socket.timeout) as error:
+            except (httpx.exceptions.HTTPError,
+                    ConnectionRefusedError,
+                    OSError) as error:
                 self.exception = error
         return result
