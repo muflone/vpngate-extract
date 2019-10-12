@@ -18,7 +18,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ##
 
-import httpx
+import aiohttp
 
 class ProxyRequest(object):
     def __init__(self, *, proxy: dict) -> None:
@@ -61,13 +61,10 @@ class ProxyRequest(object):
             self.exception = None
             result = None
             try:
-                async with httpx.AsyncClient(proxies=self.proxy,
-                                             timeout=self.__timeout) as client:
-                    request = await client.get(url)
-                    result = request.text
-                break
-            except (httpx.exceptions.HTTPError,
-                    ConnectionRefusedError,
-                    OSError) as error:
+                connector = aiohttp.TCPConnector(force_close=True)
+                async with aiohttp.ClientSession(connector=connector) as client:
+                    async with client.get(url, proxy=self.__proxy) as request:
+                        result = await request.text(encoding='utf-8')
+            except (aiohttp.client.ClientError) as error:
                 self.exception = error
         return result
