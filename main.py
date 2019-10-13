@@ -78,6 +78,15 @@ async def main():
             MINUTES=elapsed_time // 60,
             SECONDS=elapsed_time % 60
         ))
+    # Print differences found
+    if set(existing_profiles).difference(initial_profiles):
+        print('New profiles found:')
+        print('\n'.join('  {PROFILE}'.format(PROFILE=profile)
+                        for profile
+                        in set(existing_profiles).difference(initial_profiles)))
+    else:
+        print('No new profiles found')
+
 
 if __name__ == '__main__':
     asyncio.run(main())
