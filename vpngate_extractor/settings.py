@@ -19,6 +19,7 @@
 ##
 
 import argparse
+import os
 
 from . import constants
 from .singleton import Singleton
@@ -130,6 +131,10 @@ class Settings(object):
         elif self.__arguments.verbose_level is None:
             # Set verbose level to default value
             self.__arguments.verbose_level = constants.VERBOSE_LEVEL
+        # Check for missing destination folder
+        if not os.path.isdir(self.destination_path):
+            parser.error('The directory "{PATH}" does not exist'.format(
+                PATH=self.destination_path))
 
     @property
     def verbose_level(self) -> int:
