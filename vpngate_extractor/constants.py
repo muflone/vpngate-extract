@@ -18,6 +18,8 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ##
 
+# Application version
+VERSION = '0.1.0'
 # Proxy list file
 PROXY_LIST_FILENAME = 'proxy_list.csv'
 # Source page
