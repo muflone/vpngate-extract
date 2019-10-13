@@ -23,6 +23,7 @@ import argparse
 from . import constants
 from .singleton import Singleton
 
+
 @Singleton
 class Settings(object):
     def __init__(self) -> None:

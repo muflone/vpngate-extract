@@ -66,7 +66,8 @@ async def main() -> None:
     settings = Settings.Instance()
     if settings.verbose_level >= 5:
         print('The following settings are used:')
-        print('  > Verbose level: {VALUE}'.format(VALUE=settings.verbose_level))
+        print('  > Verbose level: {VALUE}'.format(
+            VALUE=settings.verbose_level))
         print('  > URL: {VALUE}'.format(VALUE=settings.url))
         print('  > Destination path: {VALUE}'.format(
             VALUE=settings.destination_path))
