@@ -70,7 +70,7 @@ class ConsumerRequest(object):
         """
         configuration_urls = []
         request = ProxyRequest(proxy=proxy)
-        request.timeout = constants.CONNECTION_TIMEOUT
+        request.timeout = self.settings.timeout
         # Download index page using proxy
         time.sleep(self.settings.delay_for_proxy)
         if self.settings.verbose_level >= 1:

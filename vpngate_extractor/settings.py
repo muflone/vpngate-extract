@@ -161,6 +161,15 @@ class Settings(object):
         return self.__arguments.runners
 
     @property
+    def timeout(self) -> int:
+        """
+        Get the number of seconds for connection timeout
+
+        :return: time in seconds
+        """
+        return self.__arguments.timeout
+
+    @property
     def delay_for_proxy(self) -> int:
         """
         Get the number of seconds to delay for each proxy request
