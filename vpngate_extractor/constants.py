@@ -18,6 +18,8 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ##
 
+# Application name
+APP_NAME = 'VPNGate Extractor'
 # Application version
 VERSION = '0.2.0'
 # Proxy list file

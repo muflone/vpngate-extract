@@ -30,7 +30,13 @@ class Settings(object):
         Parse command line arguments
         """
         parser = argparse.ArgumentParser(
+            prog=constants.APP_NAME,
             description='Get VPN hosts from vpngate')
+        parser.add_argument('-V',
+                            '--version',
+                            action='version',
+                            version='%(prog)s {VERSION}'.format(
+                                VERSION=constants.VERSION))
         parser.add_argument('-u',
                             '--url',
                             type=str,
