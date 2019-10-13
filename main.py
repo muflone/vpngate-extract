@@ -76,7 +76,7 @@ async def main() -> None:
     producer_proxy = ProducerProxy(proxies_queue)
     await producer_proxy.execute()
     # Load existing profiles list
-    initial_profiles = os.listdir(constants.DESTINATION_OVPN_PROFILES_FOLDER)
+    initial_profiles = os.listdir(settings.destination_path)
     existing_profiles = initial_profiles[:]
     # List of running worker tasks
     tasks = []

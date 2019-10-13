@@ -196,7 +196,7 @@ class ConsumerRequest(object):
                         # Skip existing profiles
                         if destination_filename not in self.profiles:
                             destination_path = os.path.join(
-                                constants.DESTINATION_OVPN_PROFILES_FOLDER,
+                                self.settings.destination_path,
                                 destination_filename)
                             with open(destination_path, 'wb') as profile_file:
                                 profile_file.write(page_content)
@@ -227,7 +227,7 @@ class ConsumerRequest(object):
                             # Skip existing profiles
                             if destination_filename not in self.profiles:
                                 destination_path = os.path.join(
-                                    constants.DESTINATION_OVPN_PROFILES_FOLDER,
+                                    self.settings.destination_path,
                                     destination_filename)
                                 self.openvpn_profile.create(
                                     filepath=destination_path,

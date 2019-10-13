@@ -114,3 +114,12 @@ class Settings(object):
         :return: numeric verbose level
         """
         return self.__arguments.verbose_level
+
+    @property
+    def destination_path(self) -> str:
+        """
+        Get the destination path
+
+        :return: path of the destination folder
+        """
+        return self.__arguments.destination
