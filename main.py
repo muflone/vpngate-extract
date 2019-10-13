@@ -57,7 +57,7 @@ async def main():
     await producer_proxy.execute()
     # List of running worker tasks
     tasks = []
-    for name in range(constants.RUNNING_TASKS):
+    for name in range(1, constants.RUNNING_TASKS + 1):
         # For each runner add an empty value to feed it with at the end
         await proxies_queue.put(None)
         tasks.append(worker(proxies_queue, name))
