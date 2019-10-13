@@ -26,6 +26,7 @@ from vpngate_extractor import constants
 from vpngate_extractor.current_time import get_current_time
 from vpngate_extractor.consumer_request import ConsumerRequest
 from vpngate_extractor.producer_proxy import ProducerProxy
+from vpngate_extractor.settings import Settings
 
 
 async def worker(proxies_queue: asyncio.Queue,
@@ -63,7 +64,8 @@ async def main() -> None:
     """
     Main function for application starting
     """
-    if constants.VERBOSE_LEVEL >= 1:
+    settings = Settings.Instance()
+    if settings.verbose_level >= 1:
         # Print starting time
         starting_time = timeit.default_timer()
         print('Starting time: {TIME}'.format(
@@ -83,7 +85,7 @@ async def main() -> None:
         await proxies_queue.put(None)
         tasks.append(worker(proxies_queue, existing_profiles, runner))
     await asyncio.wait(tasks)
-    if constants.VERBOSE_LEVEL >= 1:
+    if settings.verbose_level >= 1:
         # Print elapsed time
         ending_time = timeit.default_timer()
         print('Ending time: {TIME}'.format(

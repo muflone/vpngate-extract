@@ -28,6 +28,7 @@ from . import constants
 from .current_time import get_current_time
 from .openvpn_profile import OpenVPNProfile
 from .proxy_request import ProxyRequest
+from .settings import Settings
 
 
 # Column index where lookup the country
@@ -52,6 +53,7 @@ class ConsumerRequest(object):
         """
         self.openvpn_profile = OpenVPNProfile('ovpn_template.txt')
         self.profiles = existing_profiles
+        self.settings = Settings.Instance()
 
     async def execute(self,
                       proxy_index: int,
@@ -71,7 +73,7 @@ class ConsumerRequest(object):
         request.timeout = constants.CONNECTION_TIMEOUT
         # Download index page using proxy
         time.sleep(constants.DELAY_FOR_EACH_PROXY)
-        if constants.VERBOSE_LEVEL >= 1:
+        if self.settings.verbose_level >= 1:
             progress_percent = (proxy_index + 1) / proxies_totals * 100
             print('[{TIME}] #{RUNNER:04d} Connecting using proxy {INDEX} '
                   'of {TOTALS} ({PERCENT:.2f}%): '
@@ -83,14 +85,14 @@ class ConsumerRequest(object):
                                  URL=proxy))
         page_content = await request.open(url=constants.PAGE_URL)
         if request.exception:
-            if constants.VERBOSE_LEVEL >= 4:
+            if self.settings.verbose_level >= 4:
                 print('[{TIME}] #{RUNNER:04d} > Unable to connect: '
                       '{ERROR})'.format(TIME=get_current_time(),
                                         RUNNER=runner,
                                         ERROR=request.exception))
             return
         else:
-            if constants.VERBOSE_LEVEL >= 3:
+            if self.settings.verbose_level >= 3:
                 print('[{TIME}] #{RUNNER:04d} > Connection established, '
                       'downloading index'.format(
                             TIME=get_current_time(),
@@ -122,7 +124,7 @@ class ConsumerRequest(object):
                         continue
                     # Find any host with the requested country
                     if cell_country == constants.REQUESTED_COUNTRY:
-                        if constants.VERBOSE_LEVEL >= 2:
+                        if self.settings.verbose_level >= 2:
                             cell_hostname = (
                                 table_cells[TABLE_COLUMN_HOSTNAME].get_text())
                             print('[{TIME}] #{RUNNER:04d} > '
@@ -138,7 +140,7 @@ class ConsumerRequest(object):
                                 urllib.parse.urljoin(constants.PAGE_URL,
                                                      link.get('href')))
                     else:
-                        if constants.VERBOSE_LEVEL >= 4:
+                        if self.settings.verbose_level >= 4:
                             cell_country = (
                                table_cells[TABLE_COLUMN_COUNTRY].get_text())
                             print('[{TIME}] #{RUNNER:04d} > '
@@ -149,7 +151,7 @@ class ConsumerRequest(object):
         # Cycle each configuration_url
         for (url_index, url) in enumerate(configuration_urls):
             if constants.DOWNLOAD_PROFILES:
-                if constants.VERBOSE_LEVEL >= 2:
+                if self.settings.verbose_level >= 2:
                     print('[{TIME}] #{RUNNER:04d} > '
                           'Downloading configuration {INDEX} of {TOTALS} '
                           'hosts'.format(TIME=get_current_time(),
@@ -158,7 +160,7 @@ class ConsumerRequest(object):
                                          TOTALS=len(configuration_urls)))
                 page_content = request.open(url=url, retries=3)
                 if request.exception:
-                    if constants.VERBOSE_LEVEL >= 2:
+                    if self.settings.verbose_level >= 2:
                         print('[{TIME}] #{RUNNER:04d} > '
                               'Unable to download configuration index: '
                               '{ERROR}'.format(TIME=get_current_time(),
@@ -179,7 +181,7 @@ class ConsumerRequest(object):
                     profile_number += 1
                     full_url = urllib.parse.urljoin(constants.PAGE_URL,
                                                     link.get('href'))
-                    if constants.VERBOSE_LEVEL >= 2:
+                    if self.settings.verbose_level >= 2:
                         print('[{TIME}] #{RUNNER:04d} > '
                               'Downloading profile {INDEX} of {TOTALS}: '
                               '{URL}'.format(TIME=get_current_time(),
@@ -201,7 +203,7 @@ class ConsumerRequest(object):
                             self.profiles.append(destination_filename)
                     else:
                         # Error during configuration download
-                        if constants.VERBOSE_LEVEL >= 2:
+                        if self.settings.verbose_level >= 2:
                             print('[{TIME}] #{RUNNER:04d} > '
                                   'Unable to download the configuration: '
                                   '{ERROR}'.format(TIME=get_current_time(),
