@@ -33,6 +33,9 @@ DELAY_FOR_EACH_PROXY = 0
 DELAY_FOR_EACH_DOWNLOAD = 1
 # Connection timeout
 CONNECTION_TIMEOUT = 30
+# Operational mode
+MODE_DOWNLOAD_PROFILES = 'download'
+MODE_GENERATE_PROFILES = 'generate'
 # Download profiles
 DOWNLOAD_PROFILES = False
 # Auto-generated profiles

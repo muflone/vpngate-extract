@@ -64,8 +64,9 @@ class Settings(object):
                             type=str,
                             dest='mode',
                             action='store',
-                            choices=('download', 'generate'),
-                            default='generate',
+                            choices=(constants.MODE_DOWNLOAD_PROFILES,
+                                     constants.MODE_GENERATE_PROFILES),
+                            default=constants.MODE_GENERATE_PROFILES,
                             help='Download or generate the OVPN profiles')
         parser.add_argument('-v',
                             '--verbose',
@@ -114,6 +115,23 @@ class Settings(object):
         :return: numeric verbose level
         """
         return self.__arguments.verbose_level
+
+    @property
+    def mode(self) -> str:
+        """
+        Get the mode between generate and download
+
+        :return: operational mode
+        """
+        return self.__arguments.mode
+
+    def get_mode_download(self) -> bool:
+        """
+        Check the operational mode, if it's download
+
+        :return: boolean value for download mode
+        """
+        return self.mode == constants.MODE_DOWNLOAD_PROFILES
 
     @property
     def url(self) -> str:

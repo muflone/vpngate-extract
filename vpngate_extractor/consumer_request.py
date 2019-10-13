@@ -150,7 +150,7 @@ class ConsumerRequest(object):
                                                      COUNTRY=cell_country))
         # Cycle each configuration_url
         for (url_index, url) in enumerate(configuration_urls):
-            if constants.DOWNLOAD_PROFILES:
+            if self.settings.get_mode_download():
                 if self.settings.verbose_level >= 2:
                     print('[{TIME}] #{RUNNER:04d} > '
                           'Downloading configuration {INDEX} of {TOTALS} '
