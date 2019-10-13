@@ -159,9 +159,10 @@ class ConsumerRequest(object):
                     page_content = proxy_request.open(url=full_url, retries=10)
                     if not proxy_request.exception:
                         # Save configuration file
+                        destination_filename = link.get('href').split('/')[-1]
                         destination_path = os.path.join(
                             constants.DESTINATION_OVPN_PROFILES_FOLDER,
-                            link.get('href').split('/')[-1])
+                            destination_filename)
                         with open(destination_path, 'wb') as destination_file:
                             destination_file.write(page_content)
                     else:
@@ -181,13 +182,13 @@ class ConsumerRequest(object):
                 for destination_host_type in ('fqdn', 'ip'):
                     for port_type in ('tcp', 'udp'):
                         if arguments_dict[port_type] != '0':
-                            destination_path = os.path.join(
-                                constants.DESTINATION_OVPN_PROFILES_FOLDER,
-                                'vpngate_{HOST}_{PROTOCOL}_{PORT}.ovpn'.format(
+                            destination_filename = 'vpngate_{HOST}_{PROTOCOL}_{PORT}.ovpn'.format(
                                     HOST=arguments_dict[destination_host_type],
                                     PROTOCOL=port_type,
-                                    PORT=arguments_dict[port_type]
-                                ))
+                                    PORT=arguments_dict[port_type])
+                            destination_path = os.path.join(
+                                constants.DESTINATION_OVPN_PROFILES_FOLDER,
+                                destination_filename)
                             self.openvpn_profile.create(
                                 filepath=destination_path,
                                 protocol=port_type,
