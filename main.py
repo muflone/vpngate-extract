@@ -19,10 +19,10 @@
 ##
 
 import asyncio
-import datetime
 import timeit
 
 from vpngate_extractor import constants
+from vpngate_extractor.current_time import get_current_time
 from vpngate_extractor.consumer_request import ConsumerRequest
 from vpngate_extractor.producer_proxy import ProducerProxy
 
@@ -49,7 +49,7 @@ async def main():
         # Print starting time
         starting_time = timeit.default_timer()
         print('Starting time: {TIME}'.format(
-            TIME=datetime.datetime.now().strftime('%H:%M.%S')
+            TIME=get_current_time()
         ))
     proxies_queue = asyncio.Queue()
     # Add proxies list
@@ -66,7 +66,7 @@ async def main():
         # Print elapsed time
         ending_time = timeit.default_timer()
         print('Ending time: {TIME}'.format(
-            TIME=datetime.datetime.now().strftime('%H:%M.%S')
+            TIME=get_current_time()
         ))
         elapsed_time = int(ending_time - starting_time)
         print('Elapsed time: {HOURS:02}:{MINUTES:02}.{SECONDS:02}'.format(

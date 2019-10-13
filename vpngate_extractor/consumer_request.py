@@ -25,6 +25,7 @@ import urllib
 from bs4 import BeautifulSoup
 
 from . import constants
+from .current_time import get_current_time
 from .openvpn_profile import OpenVPNProfile
 from .proxy_request import ProxyRequest
 
@@ -51,7 +52,8 @@ class ConsumerRequest(object):
         # Download index page using proxy
         time.sleep(constants.DELAY_FOR_EACH_PROXY)
         if constants.VERBOSE_LEVEL >= 1:
-            print('[{CONSUMER:04d}] Connecting using proxy {INDEX} of {TOTALS} ({PERCENT:.2f}%): {URL}'.format(
+            print('[{TIME}] [{CONSUMER:04d}] Connecting using proxy {INDEX} of {TOTALS} ({PERCENT:.2f}%): {URL}'.format(
+                TIME=get_current_time(),
                 CONSUMER=name,
                 INDEX=proxy_index + 1,
                 TOTALS=proxies_totals,
@@ -61,14 +63,16 @@ class ConsumerRequest(object):
         page_content = await proxy_request.open(url=constants.PAGE_URL)
         if proxy_request.exception:
             if constants.VERBOSE_LEVEL >= 4:
-                print('[{CONSUMER:04d}] > Unable to connect: {ERROR})'.format(
+                print('[{TIME}] [{CONSUMER:04d}] > Unable to connect: {ERROR})'.format(
+                    TIME=get_current_time(),
                     CONSUMER=name,
                     ERROR=proxy_request.exception
                 ))
             return
         else:
             if constants.VERBOSE_LEVEL >= 3:
-                print('[{CONSUMER:04d}] > Connection established, downloading index'.format(
+                print('[{TIME}] [{CONSUMER:04d}] > Connection established, downloading index'.format(
+                    TIME=get_current_time(),
                     CONSUMER=name
                 ))
         # Apply page fixes for broken tables
@@ -95,7 +99,8 @@ class ConsumerRequest(object):
                     # Find any host with the requested country
                     if table_cells[TABLE_COLUMN_COUNTRY].get_text() == constants.REQUESTED_COUNTRY:
                         if constants.VERBOSE_LEVEL >= 2:
-                            print('[{CONSUMER:04d}] > New host to download: {URL}'.format(
+                            print('[{TIME}] [{CONSUMER:04d}] > New host to download: {URL}'.format(
+                                TIME=get_current_time(),
                                 CONSUMER=name,
                                 URL=table_cells[TABLE_COLUMN_HOSTNAME].get_text()
                             ))
@@ -106,7 +111,8 @@ class ConsumerRequest(object):
                                 urllib.parse.urljoin(constants.PAGE_URL, link.get('href')))
                     else:
                         if constants.VERBOSE_LEVEL >= 4:
-                            print('[{CONSUMER:04d}] > Skipping invalid country {COUNTRY}'.format(
+                            print('[{TIME}] [{CONSUMER:04d}] > Skipping invalid country {COUNTRY}'.format(
+                                TIME=get_current_time(),
                                 CONSUMER=name,
                                 COUNTRY=table_cells[TABLE_COLUMN_COUNTRY].get_text()
                             ))
@@ -114,7 +120,8 @@ class ConsumerRequest(object):
         for (url_index, url) in enumerate(configuration_urls):
             if constants.DOWNLOAD_PROFILES:
                 if constants.VERBOSE_LEVEL >= 2:
-                    print('[{CONSUMER:04d}] > Downloading configuration {INDEX} of {TOTALS} hosts'.format(
+                    print('[{TIME}] [{CONSUMER:04d}] > Downloading configuration {INDEX} of {TOTALS} hosts'.format(
+                        TIME=get_current_time(),
                         CONSUMER=name,
                         INDEX=url_index + 1,
                         TOTALS=len(configuration_urls)
@@ -122,7 +129,8 @@ class ConsumerRequest(object):
                 page_content = proxy_request.open(url=url, retries=3)
                 if proxy_request.exception:
                     if constants.VERBOSE_LEVEL >= 2:
-                        print('[{CONSUMER:04d}] > Unable to download configuration index: {ERROR}'.format(
+                        print('[{TIME}] [{CONSUMER:04d}] > Unable to download configuration index: {ERROR}'.format(
+                            TIME=get_current_time(),
                             CONSUMER=name,
                             ERROR=proxy_request.exception
                         ))
@@ -141,7 +149,8 @@ class ConsumerRequest(object):
                     profile_number += 1
                     full_url = urllib.parse.urljoin(constants.PAGE_URL, link.get('href'))
                     if constants.VERBOSE_LEVEL >= 2:
-                        print('[{CONSUMER:04d}] > Downloading profile {INDEX} of {TOTALS}: {URL}'.format(
+                        print('[{TIME}] [{CONSUMER:04d}] > Downloading profile {INDEX} of {TOTALS}: {URL}'.format(
+                            TIME=get_current_time(),
                             CONSUMER=name,
                             INDEX=profile_number,
                             TOTALS=len(profiles_list),
@@ -158,7 +167,8 @@ class ConsumerRequest(object):
                     else:
                         # Error during configuration download
                         if constants.VERBOSE_LEVEL >= 2:
-                            print('[{CONSUMER:04d}] > Unable to download the configuration: {ERROR}'.format(
+                            print('[{TIME}] [{CONSUMER:04d}] > Unable to download the configuration: {ERROR}'.format(
+                                TIME=get_current_time(),
                                 CONSUMER=name,
                                 ERROR=proxy_request.exception
                             ))
