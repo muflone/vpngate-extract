@@ -42,8 +42,9 @@ TABLE_COLUMN_CONFIG = 6
 TABLE_HOSTS_ID = 'vg_hosts_table_id'
 
 class ConsumerRequest(object):
-    def __init__(self):
+    def __init__(self, existing_profiles: list):
         self.openvpn_profile = OpenVPNProfile('ovpn_template.txt')
+        self.existing_profiles = existing_profiles
 
     async def execute(self, proxy_index, proxies_totals, proxy, consumer):
         configuration_urls = []
@@ -160,11 +161,14 @@ class ConsumerRequest(object):
                     if not proxy_request.exception:
                         # Save configuration file
                         destination_filename = link.get('href').split('/')[-1]
-                        destination_path = os.path.join(
-                            constants.DESTINATION_OVPN_PROFILES_FOLDER,
-                            destination_filename)
-                        with open(destination_path, 'wb') as destination_file:
-                            destination_file.write(page_content)
+                        # Skip existing profiles
+                        if destination_filename not in self.existing_profiles:
+                            destination_path = os.path.join(
+                                constants.DESTINATION_OVPN_PROFILES_FOLDER,
+                                destination_filename)
+                            with open(destination_path, 'wb') as destination_file:
+                                destination_file.write(page_content)
+                            self.existing_profiles.append(destination_filename)
                     else:
                         # Error during configuration download
                         if constants.VERBOSE_LEVEL >= 2:
@@ -186,11 +190,14 @@ class ConsumerRequest(object):
                                     HOST=arguments_dict[destination_host_type],
                                     PROTOCOL=port_type,
                                     PORT=arguments_dict[port_type])
-                            destination_path = os.path.join(
-                                constants.DESTINATION_OVPN_PROFILES_FOLDER,
-                                destination_filename)
-                            self.openvpn_profile.create(
-                                filepath=destination_path,
-                                protocol=port_type,
-                                host=arguments_dict[destination_host_type],
-                                port=arguments_dict[port_type])
+                            # Skip existing profiles
+                            if destination_filename not in self.existing_profiles:
+                                destination_path = os.path.join(
+                                    constants.DESTINATION_OVPN_PROFILES_FOLDER,
+                                    destination_filename)
+                                self.openvpn_profile.create(
+                                    filepath=destination_path,
+                                    protocol=port_type,
+                                    host=arguments_dict[destination_host_type],
+                                    port=arguments_dict[port_type])
+                                self.existing_profiles.append(destination_filename)

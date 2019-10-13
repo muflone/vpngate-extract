@@ -19,6 +19,7 @@
 ##
 
 import asyncio
+import os
 import timeit
 
 from vpngate_extractor import constants
@@ -26,8 +27,8 @@ from vpngate_extractor.current_time import get_current_time
 from vpngate_extractor.consumer_request import ConsumerRequest
 from vpngate_extractor.producer_proxy import ProducerProxy
 
-async def worker(proxies_queue: asyncio.Queue, consumer: int):
-    consumer_request = ConsumerRequest()
+async def worker(proxies_queue: asyncio.Queue, existing_profiles: list, consumer: int):
+    consumer_request = ConsumerRequest(existing_profiles)
     # This is used to start the loop only
     proxy_item = True
     # Cycle while there's a proxy from the queue
@@ -55,12 +56,15 @@ async def main():
     # Add proxies list
     producer_proxy = ProducerProxy(proxies_queue)
     await producer_proxy.execute()
+    # Load existing profiles list
+    initial_profiles = os.listdir(constants.DESTINATION_OVPN_PROFILES_FOLDER)
+    existing_profiles = initial_profiles[:]
     # List of running worker tasks
     tasks = []
     for consumer in range(1, constants.RUNNING_TASKS + 1):
         # For each runner add an empty value to feed it with at the end
         await proxies_queue.put(None)
-        tasks.append(worker(proxies_queue, consumer))
+        tasks.append(worker(proxies_queue, existing_profiles, consumer))
     await asyncio.wait(tasks)
     if constants.VERBOSE_LEVEL >= 1:
         # Print elapsed time
