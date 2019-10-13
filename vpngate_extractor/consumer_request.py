@@ -43,11 +43,11 @@ TABLE_HOSTS_ID = 'vg_hosts_table_id'
 
 
 class ConsumerRequest(object):
-    def __init__(self, existing_profiles: list):
+    def __init__(self, existing_profiles: list) -> None:
         self.openvpn_profile = OpenVPNProfile('ovpn_template.txt')
         self.profiles = existing_profiles
 
-    async def execute(self, index, proxies_totals, proxy, runner):
+    async def execute(self, index, proxies_totals, proxy, runner) -> None:
         configuration_urls = []
         request = ProxyRequest(proxy=proxy)
         request.timeout = constants.CONNECTION_TIMEOUT

@@ -30,7 +30,7 @@ from vpngate_extractor.producer_proxy import ProducerProxy
 
 async def worker(proxies_queue: asyncio.Queue,
                  existing_profiles: list,
-                 runner: int):
+                 runner: int) -> None:
     consumer_request = ConsumerRequest(existing_profiles)
     # This is used to start the loop only
     proxy_item = True
@@ -52,7 +52,7 @@ async def worker(proxies_queue: asyncio.Queue,
             await proxies_queue.join()
 
 
-async def main():
+async def main() -> None:
     if constants.VERBOSE_LEVEL >= 1:
         # Print starting time
         starting_time = timeit.default_timer()
