@@ -135,6 +135,11 @@ class Settings(object):
         if not os.path.isdir(self.destination_path):
             parser.error('The directory "{PATH}" does not exist'.format(
                 PATH=self.destination_path))
+        # Check for missing template file for generate mode
+        if (self.get_mode_generate() and
+                not os.path.isfile(self.openvpn_template)):
+            parser.error('The template file "{FILE}" does not exist'.format(
+                FILE=self.openvpn_template))
 
     @property
     def verbose_level(self) -> int:
