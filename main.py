@@ -26,7 +26,7 @@ from vpngate_extractor.current_time import get_current_time
 from vpngate_extractor.consumer_request import ConsumerRequest
 from vpngate_extractor.producer_proxy import ProducerProxy
 
-async def worker(proxies_queue: asyncio.Queue, name: int):
+async def worker(proxies_queue: asyncio.Queue, consumer: int):
     consumer_request = ConsumerRequest()
     # This is used to start the loop only
     proxy_item = True
@@ -36,7 +36,7 @@ async def worker(proxies_queue: asyncio.Queue, name: int):
         if proxy_item:
             # Extract data using the current proxy
             proxy_index, proxies_totals, proxy = proxy_item
-            await consumer_request.execute(proxy_index, proxies_totals, proxy, name)
+            await consumer_request.execute(proxy_index, proxies_totals, proxy, consumer)
             proxies_queue.task_done()
         else:
             # A couple of None follows at the end of the Queue
@@ -57,10 +57,10 @@ async def main():
     await producer_proxy.execute()
     # List of running worker tasks
     tasks = []
-    for name in range(1, constants.RUNNING_TASKS + 1):
+    for consumer in range(1, constants.RUNNING_TASKS + 1):
         # For each runner add an empty value to feed it with at the end
         await proxies_queue.put(None)
-        tasks.append(worker(proxies_queue, name))
+        tasks.append(worker(proxies_queue, consumer))
     await asyncio.wait(tasks)
     if constants.VERBOSE_LEVEL >= 1:
         # Print elapsed time
