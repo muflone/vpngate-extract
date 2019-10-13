@@ -30,6 +30,8 @@ PAGE_URL = 'https://www.vpngate.net/en/'
 REQUESTED_COUNTRY = 'Italy'
 # Destination folder
 DESTINATION_OVPN_PROFILES_FOLDER = 'ovpn_profiles'
+# OpenVPN template for auto-generation
+OVPN_TEMPLATE = 'ovpn_template.txt'
 # Delay for each download
 DELAY_FOR_EACH_PROXY = 0
 DELAY_FOR_EACH_DOWNLOAD = 1

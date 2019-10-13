@@ -75,6 +75,13 @@ class Settings(object):
                                      constants.MODE_GENERATE_PROFILES),
                             default=constants.MODE_GENERATE_PROFILES,
                             help='Download or generate the OVPN profiles')
+        parser.add_argument('-o',
+                            '--openvpn_template',
+                            type=str,
+                            dest='openvpn_template',
+                            action='store',
+                            default=constants.OVPN_TEMPLATE,
+                            help='Template filename for generation mode')
         parser.add_argument('-v',
                             '--verbose',
                             dest='verbose_level',
@@ -166,6 +173,15 @@ class Settings(object):
         :return: URL of the requested page to download the hosts
         """
         return self.__arguments.url
+
+    @property
+    def openvpn_template(self) -> str:
+        """
+        Get the template filename
+
+        :return: template filename for profiles auto-generation
+        """
+        return self.__arguments.openvpn_template
 
     @property
     def destination_path(self) -> str:

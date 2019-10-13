@@ -50,9 +50,9 @@ class ConsumerRequest(object):
         proxy URL
         :param existing_profiles: list with the downloaded profiles
         """
-        self.openvpn_profile = OpenVPNProfile('ovpn_template.txt')
-        self.profiles = existing_profiles
         self.settings = Settings.Instance()
+        self.openvpn_profile = OpenVPNProfile(self.settings.openvpn_template)
+        self.profiles = existing_profiles
 
     async def execute(self,
                       proxy_index: int,
