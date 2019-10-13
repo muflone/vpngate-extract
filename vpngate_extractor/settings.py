@@ -168,3 +168,12 @@ class Settings(object):
         :return: time in seconds
         """
         return self.__arguments.delay_proxy
+
+    @property
+    def delay_for_download(self) -> int:
+        """
+        Get the number of seconds to delay for each download
+
+        :return: time in seconds
+        """
+        return self.__arguments.delay_download

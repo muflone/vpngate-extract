@@ -176,7 +176,7 @@ class ConsumerRequest(object):
                                  if link.get('href').endswith('.ovpn')]
                 for link in profiles_list:
                     # Delay before download
-                    time.sleep(constants.DELAY_FOR_EACH_DOWNLOAD)
+                    time.sleep(self.settings.delay_for_download)
                     # Download data
                     profile_number += 1
                     full_url = urllib.parse.urljoin(self.settings.url,
