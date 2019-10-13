@@ -92,15 +92,15 @@ class Settings(object):
                             dest='quiet',
                             action='store_true',
                             help='Quiet mode, no messages are shown')
-        parser.add_argument('-r',
-                            '--runners',
-                            type=int,
-                            dest='runners',
-                            action='store',
-                            default=constants.RUNNING_TASKS,
-                            help='Running tasks in parallel')
         # Add arguments for downloads
         parser_group = parser.add_argument_group('Download options')
+        parser_group.add_argument('-r',
+                                  '--runners',
+                                  type=int,
+                                  dest='runners',
+                                  action='store',
+                                  default=constants.RUNNING_TASKS,
+                                  help='Running tasks in parallel')
         parser_group.add_argument('-t',
                                   '--timeout',
                                   type=int,
