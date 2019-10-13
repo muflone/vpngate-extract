@@ -106,7 +106,12 @@ if __name__ == '__main__':
     initial_profiles = os.listdir(settings.destination_path)
     existing_profiles = initial_profiles[:]
     # Start main program
-    asyncio.run(main(existing_profiles))
+    try:
+        asyncio.run(main(existing_profiles))
+    except KeyboardInterrupt:
+        # Intercept manual interruption
+        if settings.verbose_level >= 1:
+            print('Manual interruption')
     # Operation completed
     if settings.verbose_level >= 1:
         # Print elapsed time
