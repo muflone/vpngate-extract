@@ -20,7 +20,7 @@
 
 import asyncio
 
-from . import constants
+from .settings import Settings
 
 
 class ProducerProxy(object):
@@ -32,7 +32,8 @@ class ProducerProxy(object):
         """
         self.queue = queue
         # Prepares proxy list
-        with open(constants.PROXY_LIST_FILENAME, 'r') as proxy_file:
+        settings = Settings.Instance()
+        with open(settings.proxies, 'r') as proxy_file:
             self.proxy_list = ['{HOST}'.format(HOST=proxy.strip())
                                for proxy in proxy_file.readlines()
                                if not proxy.startswith('#')]

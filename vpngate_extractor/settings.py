@@ -132,3 +132,12 @@ class Settings(object):
         :return: path of the destination folder
         """
         return self.__arguments.destination
+
+    @property
+    def proxies(self) -> str:
+        """
+        Get the proxies filename
+
+        :return: path of the proxies list file
+        """
+        return self.__arguments.proxies
