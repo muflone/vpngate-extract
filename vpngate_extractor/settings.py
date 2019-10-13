@@ -78,8 +78,12 @@ class Settings(object):
                             '--verbose',
                             dest='verbose_level',
                             action='count',
-                            default=constants.VERBOSE_LEVEL,
                             help='Verbose level')
+        parser.add_argument('-q',
+                            '--quiet',
+                            dest='quiet',
+                            action='store_true',
+                            help='Quiet mode, no messages are shown')
         parser.add_argument('-r',
                             '--runners',
                             type=int,
@@ -111,7 +115,13 @@ class Settings(object):
                                   help='Delay in seconds for each download')
         # Parse command line arguments
         self.__arguments = parser.parse_args()
-        print(self.__arguments)
+        # Fix verbose level
+        if self.__arguments.quiet:
+            # Set verbose level to 0
+            self.__arguments.verbose_level = 0
+        elif self.__arguments.verbose_level is None:
+            # Set verbose level to default value
+            self.__arguments.verbose_level = constants.VERBOSE_LEVEL
 
     @property
     def verbose_level(self) -> int:
