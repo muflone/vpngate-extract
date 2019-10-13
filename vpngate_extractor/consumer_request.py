@@ -83,7 +83,7 @@ class ConsumerRequest(object):
                                  TOTALS=proxies_totals,
                                  PERCENT=progress_percent,
                                  URL=proxy))
-        page_content = await request.open(url=constants.PAGE_URL)
+        page_content = await request.open(url=self.settings.url)
         if request.exception:
             if self.settings.verbose_level >= 4:
                 print('[{TIME}] #{RUNNER:04d} > Unable to connect: '
@@ -137,7 +137,7 @@ class ConsumerRequest(object):
                             table_cells[TABLE_COLUMN_CONFIG].find_all('a'))
                         for link in config_links:
                             configuration_urls.append(
-                                urllib.parse.urljoin(constants.PAGE_URL,
+                                urllib.parse.urljoin(self.settings.url,
                                                      link.get('href')))
                     else:
                         if self.settings.verbose_level >= 4:
@@ -179,7 +179,7 @@ class ConsumerRequest(object):
                     time.sleep(constants.DELAY_FOR_EACH_DOWNLOAD)
                     # Download data
                     profile_number += 1
-                    full_url = urllib.parse.urljoin(constants.PAGE_URL,
+                    full_url = urllib.parse.urljoin(self.settings.url,
                                                     link.get('href'))
                     if self.settings.verbose_level >= 2:
                         print('[{TIME}] #{RUNNER:04d} > '

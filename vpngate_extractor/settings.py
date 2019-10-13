@@ -116,6 +116,15 @@ class Settings(object):
         return self.__arguments.verbose_level
 
     @property
+    def url(self) -> str:
+        """
+        Get the page URL
+
+        :return: URL of the requested page to download the hosts
+        """
+        return self.__arguments.url
+
+    @property
     def destination_path(self) -> str:
         """
         Get the destination path
