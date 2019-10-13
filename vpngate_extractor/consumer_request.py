@@ -123,7 +123,7 @@ class ConsumerRequest(object):
                     if cell_country == TABLE_COLUMN_COUNTRY_TITLE:
                         continue
                     # Find any host with the requested country
-                    if cell_country == constants.REQUESTED_COUNTRY:
+                    if cell_country == self.settings.country:
                         if self.settings.verbose_level >= 2:
                             cell_hostname = (
                                 table_cells[TABLE_COLUMN_HOSTNAME].get_text())

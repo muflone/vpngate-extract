@@ -141,3 +141,12 @@ class Settings(object):
         :return: path of the proxies list file
         """
         return self.__arguments.proxies
+
+    @property
+    def country(self) -> str:
+        """
+        Get the requested country to search
+
+        :return: country to search in the contents
+        """
+        return self.__arguments.country
