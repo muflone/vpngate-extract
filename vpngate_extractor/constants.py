@@ -21,7 +21,7 @@
 # Application name
 APP_NAME = 'VPNGate Extractor'
 # Application version
-VERSION = '0.2.0'
+VERSION = '0.3.0'
 # Proxy list file
 PROXY_LIST_FILENAME = 'proxy_list.csv'
 # Source page
