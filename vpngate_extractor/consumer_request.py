@@ -43,24 +43,30 @@ TABLE_HOSTS_ID = 'vg_hosts_table_id'
 
 
 class ConsumerRequest(object):
-    def __init__(self, existing_profiles: list) -> None:
+    def __init__(self,
+                 existing_profiles: list) -> None:
         self.openvpn_profile = OpenVPNProfile('ovpn_template.txt')
         self.profiles = existing_profiles
 
-    async def execute(self, index, proxies_totals, proxy, runner) -> None:
+    async def execute(self,
+                      proxy_index: int,
+                      proxies_totals: int,
+                      proxy: str,
+                      runner: int) -> None:
         configuration_urls = []
         request = ProxyRequest(proxy=proxy)
         request.timeout = constants.CONNECTION_TIMEOUT
         # Download index page using proxy
         time.sleep(constants.DELAY_FOR_EACH_PROXY)
         if constants.VERBOSE_LEVEL >= 1:
+            progress_percent = (proxy_index + 1) / proxies_totals * 100
             print('[{TIME}] #{RUNNER:04d} Connecting using proxy {INDEX} '
                   'of {TOTALS} ({PERCENT:.2f}%): '
                   '{URL}'.format(TIME=get_current_time(),
                                  RUNNER=runner,
-                                 INDEX=index + 1,
+                                 INDEX=proxy_index + 1,
                                  TOTALS=proxies_totals,
-                                 PERCENT=(index + 1) / proxies_totals * 100,
+                                 PERCENT=progress_percent,
                                  URL=proxy))
         page_content = await request.open(url=constants.PAGE_URL)
         if request.exception:

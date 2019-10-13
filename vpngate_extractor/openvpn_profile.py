@@ -20,7 +20,8 @@
 
 
 class OpenVPNProfile(object):
-    def __init__(self, template_path: str) -> None:
+    def __init__(self,
+                 template_path: str) -> None:
         """
         New instance of OpenVPNProfile
         :param template_path: specify the file path for the ovpn template file
@@ -28,8 +29,11 @@ class OpenVPNProfile(object):
         with open(template_path, 'r') as template_file:
             self.template_text = template_file.read()
 
-    def create(self, filepath: str, protocol: str,
-               host: str, port: int) -> None:
+    def create(self,
+               filepath: str,
+               protocol: str,
+               host: str,
+               port: int) -> None:
         """
         Create the OpenVPN profile to <filepath>
         :param filepath: filename path where to save the profile file

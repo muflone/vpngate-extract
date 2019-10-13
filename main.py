@@ -40,10 +40,10 @@ async def worker(proxies_queue: asyncio.Queue,
         if proxy_item:
             # Extract data using the current proxy
             proxy_index, proxies_totals, proxy = proxy_item
-            await consumer_request.execute(proxy_index,
-                                           proxies_totals,
-                                           proxy,
-                                           runner)
+            await consumer_request.execute(proxy_index=proxy_index,
+                                           proxies_totals=proxies_totals,
+                                           proxy=proxy,
+                                           runner=runner)
             proxies_queue.task_done()
         else:
             # A couple of None follows at the end of the Queue

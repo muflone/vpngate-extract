@@ -22,9 +22,10 @@ import aiohttp
 
 
 class ProxyRequest(object):
-    def __init__(self, *, proxy: dict) -> None:
-        self.proxy = {'all': proxy}
-        self.__proxy = proxy
+    def __init__(self,
+                 *,
+                 proxy: str) -> None:
+        self.proxy = proxy
         self.__timeout = 10
         self.exception = None
 
@@ -38,19 +39,22 @@ class ProxyRequest(object):
         return self.__timeout
 
     @timeout.setter
-    def timeout(self, new_value: int) -> None:
+    def timeout(self,
+                new_timeout: int) -> None:
         """
         Set connection timeout.
 
-        :param new_value: new timeout value
-        :return: None
+        :param new_timeout: new timeout value
         """
-        if new_value > 0:
-            self.__timeout = new_value
+        if new_timeout > 0:
+            self.__timeout = new_timeout
         else:
             raise AssertionError('Invalid value for timeout')
 
-    async def open(self, *, url: str, retries: int = 1) -> bytes:
+    async def open(self,
+                   *,
+                   url: str,
+                   retries: int = 1) -> bytes:
         """
         Open the requested url.
 
@@ -70,7 +74,7 @@ class ProxyRequest(object):
                         sock_connect=self.__timeout,
                         sock_read=self.__timeout)
                     async with http.get(url,
-                                        proxy=self.__proxy,
+                                        proxy=self.proxy,
                                         timeout=timeout) as request:
                         result = await request.text(encoding='utf-8')
             except (aiohttp.client.ClientError) as error:

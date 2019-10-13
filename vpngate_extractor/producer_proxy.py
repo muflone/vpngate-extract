@@ -24,7 +24,8 @@ from . import constants
 
 
 class ProducerProxy(object):
-    def __init__(self, queue: asyncio.Queue) -> None:
+    def __init__(self,
+                 queue: asyncio.Queue) -> None:
         """
         Creates a new ProducerProxy instance
         :param queue: Queue to add items to
