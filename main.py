@@ -27,7 +27,10 @@ from vpngate_extractor.current_time import get_current_time
 from vpngate_extractor.consumer_request import ConsumerRequest
 from vpngate_extractor.producer_proxy import ProducerProxy
 
-async def worker(proxies_queue: asyncio.Queue, existing_profiles: list, consumer: int):
+
+async def worker(proxies_queue: asyncio.Queue,
+                 existing_profiles:
+                 list, consumer: int):
     consumer_request = ConsumerRequest(existing_profiles)
     # This is used to start the loop only
     proxy_item = True
@@ -37,13 +40,16 @@ async def worker(proxies_queue: asyncio.Queue, existing_profiles: list, consumer
         if proxy_item:
             # Extract data using the current proxy
             proxy_index, proxies_totals, proxy = proxy_item
-            await consumer_request.execute(proxy_index, proxies_totals, proxy, consumer)
+            await consumer_request.execute(proxy_index,
+                                           proxies_totals,
+                                           proxy, consumer)
             proxies_queue.task_done()
         else:
             # A couple of None follows at the end of the Queue
             # in order to break the cycle
             proxies_queue.task_done()
             await proxies_queue.join()
+
 
 async def main():
     if constants.VERBOSE_LEVEL >= 1:
@@ -83,7 +89,8 @@ async def main():
         print('New profiles found:')
         print('\n'.join('  {PROFILE}'.format(PROFILE=profile)
                         for profile
-                        in set(existing_profiles).difference(initial_profiles)))
+                        in set(existing_profiles).difference(initial_profiles)
+                        ))
     else:
         print('No new profiles found')
 

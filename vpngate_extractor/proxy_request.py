@@ -20,6 +20,7 @@
 
 import aiohttp
 
+
 class ProxyRequest(object):
     def __init__(self, *, proxy: dict) -> None:
         self.proxy = {'all': proxy}
@@ -49,7 +50,7 @@ class ProxyRequest(object):
         else:
             raise AssertionError('Invalid value for timeout')
 
-    async def open(self, *, url: str, retries : int = 1) -> bytes:
+    async def open(self, *, url: str, retries: int = 1) -> bytes:
         """
         Open the requested url.
 
@@ -62,12 +63,15 @@ class ProxyRequest(object):
             result = None
             try:
                 connector = aiohttp.TCPConnector(force_close=True)
-                async with aiohttp.ClientSession(connector=connector) as client:
-                    timeout = aiohttp.ClientTimeout(total=self.__timeout,
-                                                    connect=self.__timeout,
-                                                    sock_connect=self.__timeout,
-                                                    sock_read=self.__timeout)
-                    async with client.get(url, proxy=self.__proxy, timeout=timeout) as request:
+                async with aiohttp.ClientSession(connector=connector) as http:
+                    timeout = aiohttp.ClientTimeout(
+                        total=self.__timeout,
+                        connect=self.__timeout,
+                        sock_connect=self.__timeout,
+                        sock_read=self.__timeout)
+                    async with http.get(url,
+                                        proxy=self.__proxy,
+                                        timeout=timeout) as request:
                         result = await request.text(encoding='utf-8')
             except (aiohttp.client.ClientError) as error:
                 self.exception = error
