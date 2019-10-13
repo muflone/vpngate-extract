@@ -133,6 +133,14 @@ class Settings(object):
         """
         return self.mode == constants.MODE_DOWNLOAD_PROFILES
 
+    def get_mode_generate(self) -> bool:
+        """
+        Check the operational mode, if it's generate
+
+        :return: boolean value for generate mode
+        """
+        return self.mode == constants.MODE_GENERATE_PROFILES
+
     @property
     def url(self) -> str:
         """
