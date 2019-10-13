@@ -29,16 +29,16 @@ from vpngate_extractor.settings import Settings
 
 
 async def worker(proxies_queue: asyncio.Queue,
-                 existing_profiles: list,
+                 profiles_list: list,
                  runner: int) -> None:
     """
     Worker to process any request from the queue
 
     :param proxies_queue: queue to work with the runners
-    :param existing_profiles: list of the downloaded profiles
+    :param profiles_list: list of the downloaded profiles
     :param runner: index of the current runner
     """
-    consumer_request = ConsumerRequest(existing_profiles)
+    consumer_request = ConsumerRequest(profiles_list)
     # This is used to start the loop only
     proxy_item = True
     # Cycle while there's a proxy from the queue
