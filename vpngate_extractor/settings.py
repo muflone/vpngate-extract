@@ -72,7 +72,7 @@ class Settings(object):
                             '--verbose',
                             dest='verbose_level',
                             action='count',
-                            default=0,
+                            default=constants.VERBOSE_LEVEL,
                             help='Verbose level')
         parser.add_argument('-r',
                             '--runners',
