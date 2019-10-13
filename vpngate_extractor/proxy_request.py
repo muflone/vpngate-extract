@@ -63,7 +63,11 @@ class ProxyRequest(object):
             try:
                 connector = aiohttp.TCPConnector(force_close=True)
                 async with aiohttp.ClientSession(connector=connector) as client:
-                    async with client.get(url, proxy=self.__proxy) as request:
+                    timeout = aiohttp.ClientTimeout(total=self.__timeout,
+                                                    connect=self.__timeout,
+                                                    sock_connect=self.__timeout,
+                                                    sock_read=self.__timeout)
+                    async with client.get(url, proxy=self.__proxy, timeout=timeout) as request:
                         result = await request.text(encoding='utf-8')
             except (aiohttp.client.ClientError) as error:
                 self.exception = error
