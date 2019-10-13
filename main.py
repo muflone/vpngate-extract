@@ -22,7 +22,6 @@ import asyncio
 import os
 import timeit
 
-from vpngate_extractor import constants
 from vpngate_extractor.current_time import get_current_time
 from vpngate_extractor.consumer_request import ConsumerRequest
 from vpngate_extractor.producer_proxy import ProducerProxy
@@ -80,7 +79,7 @@ async def main() -> None:
     existing_profiles = initial_profiles[:]
     # List of running worker tasks
     tasks = []
-    for runner in range(1, constants.RUNNING_TASKS + 1):
+    for runner in range(1, settings.runners + 1):
         # For each runner add an empty value to feed it with at the end
         await proxies_queue.put(None)
         tasks.append(worker(proxies_queue, existing_profiles, runner))

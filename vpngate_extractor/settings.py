@@ -150,3 +150,12 @@ class Settings(object):
         :return: country to search in the contents
         """
         return self.__arguments.country
+
+    @property
+    def runners(self) -> int:
+        """
+        Get the number of runners to launch during the scan
+
+        :return: runners count
+        """
+        return self.__arguments.runners
