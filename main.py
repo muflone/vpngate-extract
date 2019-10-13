@@ -19,6 +19,8 @@
 ##
 
 import asyncio
+import datetime
+import timeit
 
 from vpngate_extractor import constants
 from vpngate_extractor.consumer_request import ConsumerRequest
@@ -43,6 +45,12 @@ async def worker(proxies_queue: asyncio.Queue, name: int):
             await proxies_queue.join()
 
 async def main():
+    if constants.VERBOSE_LEVEL >= 1:
+        # Print starting time
+        starting_time = timeit.default_timer()
+        print('Starting time: {TIME}'.format(
+            TIME=datetime.datetime.now().strftime('%H:%M.%S')
+        ))
     proxies_queue = asyncio.Queue()
     # Add proxies list
     producer_proxy = ProducerProxy(proxies_queue)
@@ -54,6 +62,18 @@ async def main():
         await proxies_queue.put(None)
         tasks.append(worker(proxies_queue, name))
     await asyncio.wait(tasks)
+    if constants.VERBOSE_LEVEL >= 1:
+        # Print elapsed time
+        ending_time = timeit.default_timer()
+        print('Ending time: {TIME}'.format(
+            TIME=datetime.datetime.now().strftime('%H:%M.%S')
+        ))
+        elapsed_time = int(ending_time - starting_time)
+        print('Elapsed time: {HOURS:02}:{MINUTES:02}.{SECONDS:02}'.format(
+            HOURS=elapsed_time // 3600,
+            MINUTES=elapsed_time // 60,
+            SECONDS=elapsed_time % 60
+        ))
 
 if __name__ == '__main__':
     asyncio.run(main())
