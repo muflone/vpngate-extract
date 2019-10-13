@@ -64,6 +64,21 @@ async def main() -> None:
     Main function for application starting
     """
     settings = Settings.Instance()
+    if settings.verbose_level >= 5:
+        print('The following settings are used:')
+        print('  > Verbose level: {VALUE}'.format(VALUE=settings.verbose_level))
+        print('  > URL: {VALUE}'.format(VALUE=settings.url))
+        print('  > Destination path: {VALUE}'.format(
+            VALUE=settings.destination_path))
+        print('  > Proxy list: {VALUE}'.format(VALUE=settings.proxies))
+        print('  > Country: {VALUE}'.format(VALUE=settings.country))
+        print('  > Timeout: {VALUE}'.format(VALUE=settings.timeout))
+        print('  > Mode: {VALUE}'.format(VALUE=settings.mode))
+        print('  > Runners: {VALUE}'.format(VALUE=settings.runners))
+        print('  > Delay for proxy: {VALUE}'.format(
+            VALUE=settings.delay_for_proxy))
+        print('  > Delay for download: {VALUE}'.format(
+            VALUE=settings.delay_for_download))
     if settings.verbose_level >= 1:
         # Print starting time
         starting_time = timeit.default_timer()
