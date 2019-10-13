@@ -31,6 +31,13 @@ from vpngate_extractor.producer_proxy import ProducerProxy
 async def worker(proxies_queue: asyncio.Queue,
                  existing_profiles: list,
                  runner: int) -> None:
+    """
+    Worker to process any request from the queue
+
+    :param proxies_queue: queue to work with the runners
+    :param existing_profiles: list of the downloaded profiles
+    :param runner: index of the current runner
+    """
     consumer_request = ConsumerRequest(existing_profiles)
     # This is used to start the loop only
     proxy_item = True
@@ -53,6 +60,9 @@ async def worker(proxies_queue: asyncio.Queue,
 
 
 async def main() -> None:
+    """
+    Main function for application starting
+    """
     if constants.VERBOSE_LEVEL >= 1:
         # Print starting time
         starting_time = timeit.default_timer()
@@ -96,5 +106,6 @@ async def main() -> None:
         print('No new profiles found')
 
 
+# Main activity
 if __name__ == '__main__':
     asyncio.run(main())

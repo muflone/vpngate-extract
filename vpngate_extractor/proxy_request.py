@@ -25,6 +25,11 @@ class ProxyRequest(object):
     def __init__(self,
                  *,
                  proxy: str) -> None:
+        """
+        ProxyRequest object to send an HTTP request using a proxy URL
+
+        :param proxy: URL of the proxy to use
+        """
         self.proxy = proxy
         self.__timeout = 10
         self.exception = None

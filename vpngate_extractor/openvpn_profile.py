@@ -23,8 +23,8 @@ class OpenVPNProfile(object):
     def __init__(self,
                  template_path: str) -> None:
         """
-        New instance of OpenVPNProfile
-        :param template_path: specify the file path for the ovpn template file
+        OpenVPNProfile object to store OpenVPN profiles
+        :param template_path: file path for the ovpn template file
         """
         with open(template_path, 'r') as template_file:
             self.template_text = template_file.read()

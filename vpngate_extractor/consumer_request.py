@@ -45,6 +45,11 @@ TABLE_HOSTS_ID = 'vg_hosts_table_id'
 class ConsumerRequest(object):
     def __init__(self,
                  existing_profiles: list) -> None:
+        """
+        ConsumerRequest object to send requests to the server using a
+        proxy URL
+        :param existing_profiles: list with the downloaded profiles
+        """
         self.openvpn_profile = OpenVPNProfile('ovpn_template.txt')
         self.profiles = existing_profiles
 
@@ -53,6 +58,14 @@ class ConsumerRequest(object):
                       proxies_totals: int,
                       proxy: str,
                       runner: int) -> None:
+        """
+        Process a request to get the VPN hosts using the specified proxy
+        :param proxy_index: index in the proxies list
+        :param proxies_totals: number of proxies in the list
+        :param proxy: URL of the proxy to use
+        :param runner: index of the processing runner
+        :return:
+        """
         configuration_urls = []
         request = ProxyRequest(proxy=proxy)
         request.timeout = constants.CONNECTION_TIMEOUT
