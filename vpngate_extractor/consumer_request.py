@@ -47,17 +47,17 @@ class ConsumerRequest(object):
         self.openvpn_profile = OpenVPNProfile('ovpn_template.txt')
         self.profiles = existing_profiles
 
-    async def execute(self, index, proxies_totals, proxy, consumer):
+    async def execute(self, index, proxies_totals, proxy, runner):
         configuration_urls = []
         request = ProxyRequest(proxy=proxy)
         request.timeout = constants.CONNECTION_TIMEOUT
         # Download index page using proxy
         time.sleep(constants.DELAY_FOR_EACH_PROXY)
         if constants.VERBOSE_LEVEL >= 1:
-            print('[{TIME}] #{CONSUMER:04d} Connecting using proxy {INDEX} '
+            print('[{TIME}] #{RUNNER:04d} Connecting using proxy {INDEX} '
                   'of {TOTALS} ({PERCENT:.2f}%): '
                   '{URL}'.format(TIME=get_current_time(),
-                                 CONSUMER=consumer,
+                                 RUNNER=runner,
                                  INDEX=index + 1,
                                  TOTALS=proxies_totals,
                                  PERCENT=(index + 1) / proxies_totals * 100,
@@ -65,17 +65,17 @@ class ConsumerRequest(object):
         page_content = await request.open(url=constants.PAGE_URL)
         if request.exception:
             if constants.VERBOSE_LEVEL >= 4:
-                print('[{TIME}] #{CONSUMER:04d} > Unable to connect: '
+                print('[{TIME}] #{RUNNER:04d} > Unable to connect: '
                       '{ERROR})'.format(TIME=get_current_time(),
-                                        CONSUMER=consumer,
+                                        RUNNER=runner,
                                         ERROR=request.exception))
             return
         else:
             if constants.VERBOSE_LEVEL >= 3:
-                print('[{TIME}] #{CONSUMER:04d} > Connection established, '
+                print('[{TIME}] #{RUNNER:04d} > Connection established, '
                       'downloading index'.format(
                             TIME=get_current_time(),
-                            CONSUMER=consumer))
+                            RUNNER=runner))
         # Apply page fixes for broken tables
         page_content = page_content.replace(
             "<td class='vg_table_header'><b>Score</b><BR>"
@@ -106,10 +106,10 @@ class ConsumerRequest(object):
                         if constants.VERBOSE_LEVEL >= 2:
                             cell_hostname = (
                                 table_cells[TABLE_COLUMN_HOSTNAME].get_text())
-                            print('[{TIME}] #{CONSUMER:04d} > '
+                            print('[{TIME}] #{RUNNER:04d} > '
                                   'New host to download: '
                                   '{URL}'.format(TIME=get_current_time(),
-                                                 CONSUMER=consumer,
+                                                 RUNNER=runner,
                                                  URL=cell_hostname))
                         # Save data
                         config_links = (
@@ -122,28 +122,28 @@ class ConsumerRequest(object):
                         if constants.VERBOSE_LEVEL >= 4:
                             cell_country = (
                                table_cells[TABLE_COLUMN_COUNTRY].get_text())
-                            print('[{TIME}] #{CONSUMER:04d} > '
+                            print('[{TIME}] #{RUNNER:04d} > '
                                   'Skipping invalid country '
                                   '{COUNTRY}'.format(TIME=get_current_time(),
-                                                     CONSUMER=consumer,
+                                                     RUNNER=runner,
                                                      COUNTRY=cell_country))
         # Cycle each configuration_url
         for (url_index, url) in enumerate(configuration_urls):
             if constants.DOWNLOAD_PROFILES:
                 if constants.VERBOSE_LEVEL >= 2:
-                    print('[{TIME}] #{CONSUMER:04d} > '
+                    print('[{TIME}] #{RUNNER:04d} > '
                           'Downloading configuration {INDEX} of {TOTALS} '
                           'hosts'.format(TIME=get_current_time(),
-                                         CONSUMER=consumer,
+                                         RUNNER=runner,
                                          INDEX=url_index + 1,
                                          TOTALS=len(configuration_urls)))
                 page_content = request.open(url=url, retries=3)
                 if request.exception:
                     if constants.VERBOSE_LEVEL >= 2:
-                        print('[{TIME}] #{CONSUMER:04d} > '
+                        print('[{TIME}] #{RUNNER:04d} > '
                               'Unable to download configuration index: '
                               '{ERROR}'.format(TIME=get_current_time(),
-                                               CONSUMER=consumer,
+                                               RUNNER=runner,
                                                ERROR=request.exception))
                     continue
                 # Parse each configuration page
@@ -161,10 +161,10 @@ class ConsumerRequest(object):
                     full_url = urllib.parse.urljoin(constants.PAGE_URL,
                                                     link.get('href'))
                     if constants.VERBOSE_LEVEL >= 2:
-                        print('[{TIME}] #{CONSUMER:04d} > '
+                        print('[{TIME}] #{RUNNER:04d} > '
                               'Downloading profile {INDEX} of {TOTALS}: '
                               '{URL}'.format(TIME=get_current_time(),
-                                             CONSUMER=consumer,
+                                             RUNNER=runner,
                                              INDEX=profile_number,
                                              TOTALS=len(profiles_list),
                                              URL=full_url))
@@ -183,10 +183,10 @@ class ConsumerRequest(object):
                     else:
                         # Error during configuration download
                         if constants.VERBOSE_LEVEL >= 2:
-                            print('[{TIME}] #{CONSUMER:04d} > '
+                            print('[{TIME}] #{RUNNER:04d} > '
                                   'Unable to download the configuration: '
                                   '{ERROR}'.format(TIME=get_current_time(),
-                                                   CONSUMER=consumer,
+                                                   RUNNER=runner,
                                                    ERROR=request.exception))
             if constants.AUTOGENERATED_PROFILES:
                 # Generate OpenVPN profiles

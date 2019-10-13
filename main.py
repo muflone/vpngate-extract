@@ -30,7 +30,7 @@ from vpngate_extractor.producer_proxy import ProducerProxy
 
 async def worker(proxies_queue: asyncio.Queue,
                  existing_profiles: list,
-                 consumer: int):
+                 runner: int):
     consumer_request = ConsumerRequest(existing_profiles)
     # This is used to start the loop only
     proxy_item = True
@@ -42,7 +42,8 @@ async def worker(proxies_queue: asyncio.Queue,
             proxy_index, proxies_totals, proxy = proxy_item
             await consumer_request.execute(proxy_index,
                                            proxies_totals,
-                                           proxy, consumer)
+                                           proxy,
+                                           runner)
             proxies_queue.task_done()
         else:
             # A couple of None follows at the end of the Queue
@@ -67,10 +68,10 @@ async def main():
     existing_profiles = initial_profiles[:]
     # List of running worker tasks
     tasks = []
-    for consumer in range(1, constants.RUNNING_TASKS + 1):
+    for runner in range(1, constants.RUNNING_TASKS + 1):
         # For each runner add an empty value to feed it with at the end
         await proxies_queue.put(None)
-        tasks.append(worker(proxies_queue, existing_profiles, consumer))
+        tasks.append(worker(proxies_queue, existing_profiles, runner))
     await asyncio.wait(tasks)
     if constants.VERBOSE_LEVEL >= 1:
         # Print elapsed time
