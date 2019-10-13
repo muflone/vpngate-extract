@@ -59,10 +59,26 @@ async def worker(proxies_queue: asyncio.Queue,
             await proxies_queue.join()
 
 
-async def main() -> None:
+async def main(profiles_list: list) -> None:
     """
     Main function for application starting
     """
+    settings = Settings.Instance()
+    proxies_queue = asyncio.Queue()
+    # Add proxies list
+    producer_proxy = ProducerProxy(proxies_queue)
+    await producer_proxy.execute()
+    # List of running worker tasks
+    tasks = []
+    for runner in range(1, settings.runners + 1):
+        # For each runner add an empty value to feed it with at the end
+        await proxies_queue.put(None)
+        tasks.append(worker(proxies_queue, profiles_list, runner))
+    await asyncio.wait(tasks)
+
+
+# Main activity
+if __name__ == '__main__':
     settings = Settings.Instance()
     if settings.verbose_level >= 5:
         print('The following settings are used:')
@@ -86,20 +102,12 @@ async def main() -> None:
         print('Starting time: {TIME}'.format(
             TIME=get_current_time()
         ))
-    proxies_queue = asyncio.Queue()
-    # Add proxies list
-    producer_proxy = ProducerProxy(proxies_queue)
-    await producer_proxy.execute()
     # Load existing profiles list
     initial_profiles = os.listdir(settings.destination_path)
     existing_profiles = initial_profiles[:]
-    # List of running worker tasks
-    tasks = []
-    for runner in range(1, settings.runners + 1):
-        # For each runner add an empty value to feed it with at the end
-        await proxies_queue.put(None)
-        tasks.append(worker(proxies_queue, existing_profiles, runner))
-    await asyncio.wait(tasks)
+    # Start main program
+    asyncio.run(main(existing_profiles))
+    # Operation completed
     if settings.verbose_level >= 1:
         # Print elapsed time
         ending_time = timeit.default_timer()
@@ -121,8 +129,3 @@ async def main() -> None:
                         ))
     else:
         print('No new profiles found')
-
-
-# Main activity
-if __name__ == '__main__':
-    asyncio.run(main())
