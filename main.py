@@ -29,8 +29,8 @@ from vpngate_extractor.producer_proxy import ProducerProxy
 
 
 async def worker(proxies_queue: asyncio.Queue,
-                 existing_profiles:
-                 list, consumer: int):
+                 existing_profiles: list,
+                 consumer: int):
     consumer_request = ConsumerRequest(existing_profiles)
     # This is used to start the loop only
     proxy_item = True
