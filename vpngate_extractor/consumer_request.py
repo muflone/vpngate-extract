@@ -72,7 +72,7 @@ class ConsumerRequest(object):
         request = ProxyRequest(proxy=proxy)
         request.timeout = constants.CONNECTION_TIMEOUT
         # Download index page using proxy
-        time.sleep(constants.DELAY_FOR_EACH_PROXY)
+        time.sleep(self.settings.delay_for_proxy)
         if self.settings.verbose_level >= 1:
             progress_percent = (proxy_index + 1) / proxies_totals * 100
             print('[{TIME}] #{RUNNER:04d} Connecting using proxy {INDEX} '

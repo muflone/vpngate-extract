@@ -159,3 +159,12 @@ class Settings(object):
         :return: runners count
         """
         return self.__arguments.runners
+
+    @property
+    def delay_for_proxy(self) -> int:
+        """
+        Get the number of seconds to delay for each proxy request
+
+        :return: time in seconds
+        """
+        return self.__arguments.delay_proxy
